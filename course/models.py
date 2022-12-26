@@ -7,7 +7,7 @@ class Language(models.Model):
     # Название языка. К примеру: "Арабский"
     title = models.CharField(max_length=100)
 
-    description = models.TextField()
+    description = models.TextField(blank=True)
     updated_at = models.DateTimeField()
     created_at = models.DateTimeField()
 
@@ -26,10 +26,10 @@ class Lecturer(models.Model):
     # Фамилия учителя
     last_name = models.CharField(max_length=50)
     # Номер телефона учителя в формате: +72225554432
-    phone_number = models.CharField(max_length=12)
-    email = models.CharField(max_length=100)
+    phone_number = models.CharField(max_length=15, blank=True)
+    email = models.CharField(max_length=256, blank=True)
 
-    description = models.TextField()
+    description = models.TextField(blank=True)
     updated_at = models.DateTimeField()
     created_at = models.DateTimeField()
 
@@ -43,10 +43,11 @@ class Lecturer(models.Model):
 
 
 class Course(models.Model):
+    # Название курса. К примеру: "Python Access to Web Data"
     title = models.TextField()
     # Партнёр курса. К примеру: "University of Michigan"
     partner = models.CharField(max_length=200)
-    # Тема курса. К примеру: "Python Access to Web Data"
+    # Затрагиваемый стек. К примеру: "Python (Django)"
     topic = models.CharField(max_length=100)
     # Наличие сертификата от Coursera (да/нет)
     has_certificate = models.BooleanField()
@@ -61,7 +62,7 @@ class Course(models.Model):
     language = models.ForeignKey(Language, on_delete=models.CASCADE, verbose_name="Язык курса")
     lecturer = models.ForeignKey(Lecturer, on_delete=models.CASCADE, verbose_name="Лектор")
 
-    description = models.TextField()
+    description = models.TextField(blank=True)
     updated_at = models.DateTimeField()
     created_at = models.DateTimeField()
 
