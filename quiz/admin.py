@@ -1,10 +1,10 @@
 from django.contrib import admin
-from .models import *
+from . import models
 
 # Register your models here.
-admin.site.register(LessonQuiz)
-admin.site.register(FinalQuiz)
-admin.site.register(QuestionsForFinalQuiz)
-admin.site.register(QuestionsForLessonQuiz)
-admin.site.register(AnswerForFinalQuizQuestion)
-admin.site.register(AnswerForLessonQuizQuestion)
+admin.site.register(models.LessonQuiz)
+admin.site.register(models.FinalQuiz)
+admin.site.register(models.FinalQuizQuestion)
+admin.site.register(models.LessonQuizQuestion)
+admin.site.register(models.FinalQuizAnswer)
+admin.site.register(models.LessonQuizAnswer)

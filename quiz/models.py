@@ -10,7 +10,7 @@ class FinalQuiz(models.Model):
                                   verbose_name='Course id')  # зависит от course_id model
     language = models.OneToOneField(to=Language, on_delete=models.CASCADE,
                                     verbose_name='Language')  # язык курса совпадает с языком теста
-    mark = models.FloatField()
+    total_mark = models.FloatField()
 
     def __str__(self):
         return f'Final mark for Quiz to Course {self.course.name} - {self.mark}'
@@ -22,45 +22,45 @@ class LessonQuiz(models.Model):
                                   # verbose_name='Lesson id')  # зависит от Lesson model
     language = models.OneToOneField(to=Language, on_delete=models.CASCADE,
                                     verbose_name='Language')  # язык курса совпадает с языком теста
-    mark = models.FloatField()
+    total_mark = models.FloatField()
 
     def __str__(self):
         return f'Final mark for Quiz to Course {self.lesson.name} - {self.mark}'
 
 
-class QuestionsForFinalQuiz(models.Model):
-    quiz = models.OneToOneField(FinalQuiz, on_delete=models.CASCADE,
+class FinalQuizQuestion(models.Model):
+    related_quiz = models.OneToOneField(FinalQuiz, on_delete=models.CASCADE,
                                 verbose_name='Quiz id')  # quiz, к которому применяется
-    question = models.CharField(max_length=100, verbose_name='Question text')  # текст вопроса
-    question_mark = models.FloatField(verbose_name='Mark for question')  # кол-во баллов за правильный ответ на вопрос
+    text = models.CharField(max_length=100, verbose_name='Question text')  # текст вопроса
+    mark = models.FloatField(verbose_name='Mark for question')  # кол-во баллов за правильный ответ на вопрос
 
     def __str__(self):
         return f'{self.question} - question'
 
 
-class QuestionsForLessonQuiz(models.Model):
-    quiz = models.OneToOneField(LessonQuiz, on_delete=models.CASCADE,
+class LessonQuizQuestion(models.Model):
+    related_quiz = models.OneToOneField(LessonQuiz, on_delete=models.CASCADE,
                                 verbose_name='Quiz id')  # quiz, к которому применяется
-    question = models.CharField(max_length=100, verbose_name='Question text')  # текст вопроса
-    question_mark = models.FloatField(verbose_name='Mark for question')  # кол-во баллов за правильный ответ на вопрос
+    text = models.CharField(max_length=100, verbose_name='Question text')  # текст вопроса
+    mark = models.FloatField(verbose_name='Mark for question')  # кол-во баллов за правильный ответ на вопрос
 
     def __str__(self):
         return f'{self.question} - question'
 
 
-class AnswerForFinalQuizQuestion(models.Model):
-    question = models.OneToOneField(QuestionsForFinalQuiz,
+class FinalQuizAnswer(models.Model):
+    related_question = models.OneToOneField(FinalQuizQuestion,
                                     on_delete=models.CASCADE)  # id того вопроса, к которому применяется
-    answer = models.CharField(max_length=100)  # сам ответ
+    content = models.CharField(max_length=100)  # сам ответ
 
     def __str__(self):
         return f'{self.answer} - answer'
 
 
-class AnswerForLessonQuizQuestion(models.Model):
-    question = models.OneToOneField(QuestionsForLessonQuiz,
+class LessonQuizAnswer(models.Model):
+    related_question = models.OneToOneField(LessonQuizQuestion,
                                     on_delete=models.CASCADE)  # id того вопроса, к которому применяется
-    answer = models.CharField(max_length=100)  # сам ответ
+    content = models.CharField(max_length=100)  # сам ответ
 
     def __str__(self):
         return f'{self.answer} - answer'
