@@ -15,12 +15,6 @@ router.register(r'api/grades', GradeViewSet, basename="gradesviewset")
 
 
 urlpatterns = [
-    # Homework Tasks
-    # path('api/tasks', homework_task_list_api_view),
-    # path('api/tasks/<int:pk>', homework_task_detail_api_view),
-    # path('api/tasks', homework_taks_create_api_view),
-    # path('api/tasks-update/<int:pk>', homework_task_update_api_view),
-    # path('api/tasks-delete/<int:pk>', homework_task_delete_api_view),
 
 ]
 
