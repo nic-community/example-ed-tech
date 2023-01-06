@@ -1,25 +1,19 @@
 from django.urls import path
+from rest_framework import routers
 from .views import *
+from course.views.language_view import *
+from .views.lecturer_view import LecturerViewSet
+from .views.language_view import LanguageViewSet
+from .views.course_view import CourseViewSet
+
+router = routers.SimpleRouter()
+router.register(r'languages', LanguageViewSet, basename='languages-view')
+router.register(r'lecturers', LecturerViewSet, basename='lecturers-view')
+router.register(r'courses', CourseViewSet, basename='courses-view')
+
 
 urlpatterns = [
-    # ----- LANGUAGE model -----
-    path('api/languages', language_list_api_view),
-    path('api/languages/<int:pk>', language_detail_api_view),
-    path('api/language-create', language_create_api_view),
-    path('api/language-update/<int:pk>', language_update_api_view),
-    path('api/language-delete/<int:pk>', language_delete_api_view),
 
-    # ----- LECTURER model -----
-    path('api/lecturers', lecturer_list_api_view),
-    path('api/lecturers/<int:pk>', lecturer_detail_api_view),
-    path('api/lecturers-create', lecturer_create_api_view),
-    path('api/lecturers-update/<int:pk>', lecturer_update_api_view),
-    path('api/lecturers-delete/<int:pk>', lecturer_delete_api_view),
-
-    # ----- COURSE model -----
-    path('api/courses', course_list_api_view),
-    path('api/courses/<int:pk>', course_detail_api_view),
-    path('api/courses-create', course_create_api_view),
-    path('api/courses-update/<int:pk>', course_update_api_view),
-    path('api/courses-delete/<int:pk>', course_delete_api_view),
 ]
+
+urlpatterns += router.urls
