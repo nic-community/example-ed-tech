@@ -13,7 +13,7 @@ class FinalQuiz(models.Model):
     total_mark = models.FloatField()
 
     def __str__(self):
-        return f'Final mark for Quiz to Course {self.course.name} - {self.mark}'
+        return f'Final mark for Quiz to Course {self.course.title} - {self.total_mark}'
 
 
 class LessonQuiz(models.Model):
@@ -23,9 +23,8 @@ class LessonQuiz(models.Model):
     language = models.OneToOneField(to=Language, on_delete=models.CASCADE,
                                     verbose_name='Language')  # язык курса совпадает с языком теста
     total_mark = models.FloatField()
-
     def __str__(self):
-        return f'Final mark for Quiz to Course {self.lesson.name} - {self.mark}'
+        return f'Final mark for Quiz to Lesson {self.lesson.name} - {self.mark}'
 
 
 class FinalQuizQuestion(models.Model):
@@ -35,7 +34,7 @@ class FinalQuizQuestion(models.Model):
     mark = models.FloatField(verbose_name='Mark for question')  # кол-во баллов за правильный ответ на вопрос
 
     def __str__(self):
-        return f'{self.question} - question'
+        return f'{self.text} - question'
 
 
 class LessonQuizQuestion(models.Model):
@@ -45,7 +44,7 @@ class LessonQuizQuestion(models.Model):
     mark = models.FloatField(verbose_name='Mark for question')  # кол-во баллов за правильный ответ на вопрос
 
     def __str__(self):
-        return f'{self.question} - question'
+        return f'{self.text} - question'
 
 
 class FinalQuizAnswer(models.Model):
@@ -54,7 +53,7 @@ class FinalQuizAnswer(models.Model):
     content = models.CharField(max_length=100)  # сам ответ
 
     def __str__(self):
-        return f'{self.answer} - answer'
+        return f'{self.content} - answer'
 
 
 class LessonQuizAnswer(models.Model):
@@ -63,4 +62,4 @@ class LessonQuizAnswer(models.Model):
     content = models.CharField(max_length=100)  # сам ответ
 
     def __str__(self):
-        return f'{self.answer} - answer'
+        return f'{self.content} - answer'
