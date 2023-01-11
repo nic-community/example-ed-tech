@@ -24,7 +24,7 @@ class LessonQuiz(models.Model):
                                     verbose_name='Language')  # язык курса совпадает с языком теста
     total_mark = models.FloatField()
     def __str__(self):
-        return f'Final mark for Quiz to Lesson {self.lesson.name} - {self.mark}'
+        return f'Final mark for Quiz to Lesson {self.lesson.name} - {self.total_mark}'
 
 
 class FinalQuizQuestion(models.Model):
