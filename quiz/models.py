@@ -14,7 +14,7 @@ class FinalQuiz(models.Model):
     student = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Student") # студент к которому  привязывается конкретная оценка
 
     course = models.OneToOneField(to=Course,on_delete=models.CASCADE,  verbose_name='Course id')  # зависит от course_id model
-    language = models.ManyToManyField(to=Language, verbose_name='Language')  # язык курса совпадает с языком теста
+    language = models.ForeignKey(to=Language, on_delete=models.CASCADE, verbose_name='Language')  # язык курса совпадает с языком теста
     total_mark = models.FloatField() #оценка за тест для студента, а не в целом максимальная за тест
 
     def __str__(self):
@@ -26,7 +26,7 @@ class LessonQuiz(models.Model):
     # lesson = models.OneToOneField(to=Lesson, on_delete=models.CASCADE,
     #                               verbose_name='Lesson id')  # зависит от Lesson model
 
-    language = models.ManyToManyField(to=Language, verbose_name='Language')  # язык курса совпадает с языком теста
+    language = models.ForeignKey(to=Language, on_delete=models.CASCADE, verbose_name='Language')  # язык курса совпадает с языком теста
 
     student = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Student") # студент, к которому привязывается конкретная оценка
 
