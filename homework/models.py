@@ -1,3 +1,4 @@
+import os
 import uuid
 from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
@@ -24,13 +25,20 @@ class HomeworkTaskModel(models.Model):
         ordering = ['created_at']
 
 
+def get_file_path(instance, filename):
+    ext = filename.split('.')[-1]
+    filename = "%s.%s" % (uuid.uuid4(), ext)
+    return os.path.join('uploads/homework', filename)
+
+
 class HomeworkAnswerModel(models.Model):
+
     """Модель для домашней работы от ученика"""
 
     student = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Студент")
     task = models.ForeignKey(HomeworkTaskModel, on_delete=models.CASCADE, verbose_name="Задание")
     content = models.TextField(verbose_name="Котент", blank=True)
-    files = models.FileField(upload_to='uploads/homework/{0}'.format(uuid.uuid4()), blank=True)
+    files = models.FileField(upload_to=get_file_path, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
