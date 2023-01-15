@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     'homework.apps.HomeworkConfig',
     'lesson.apps.LessonConfig',
     'quiz.apps.QuizConfig',
+    'rest_framework'
 ]
 
 MIDDLEWARE = [

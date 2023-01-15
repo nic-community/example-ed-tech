@@ -48,7 +48,6 @@ class GradesForHomework(models.Model):
 
     homework = models.ForeignKey(HomeworkAnswerModel, on_delete=models.CASCADE, verbose_name="Домашняя работа")
     comments = models.TextField(verbose_name="Комментарии", blank=True)
-    # Добавить Курс
     grade = models.FloatField(validators=[MinValueValidator(0.0), MaxValueValidator(100.0)], verbose_name="Оценка")
 
     def __str__(self):
