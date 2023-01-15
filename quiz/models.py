@@ -3,7 +3,7 @@ from course.models import Course
 from course.models import Language
 
 
-from django.contrib.auth.models import User
+from user.models import User
 
 
 # from lesson.models import Lesson
