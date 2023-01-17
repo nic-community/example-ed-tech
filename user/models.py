@@ -8,6 +8,7 @@ class User(AbstractUser, PermissionsMixin):
     email = models.EmailField(max_length=256, unique=True)
     course = models.ForeignKey(Course, on_delete=models.CASCADE, verbose_name="Курс ученика", blank=True, null=True)
     date_of_birth = models.DateTimeField(blank=True, null=True)
+    phone_number = models.CharField(max_length=15, unique=True, null=True)
 
     # ENUM Roles
     class Roles(models.IntegerChoices):
