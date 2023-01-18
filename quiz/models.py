@@ -3,31 +3,37 @@ from course.models import Course
 from course.models import Language
 
 
+from user.models import User
+
+
 # from lesson.models import Lesson
 
 
 # Create your models here.
 class FinalQuiz(models.Model):
-    course = models.OneToOneField(to=Course, on_delete=models.CASCADE,
-                                  verbose_name='Course id')  # зависит от course_id model
-    language = models.OneToOneField(to=Language, on_delete=models.CASCADE,
-                                    verbose_name='Language')  # язык курса совпадает с языком теста
-    total_mark = models.FloatField()
+    student = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Student") # студент к которому  привязывается конкретная оценка
+
+    course = models.OneToOneField(to=Course,on_delete=models.CASCADE,  verbose_name='Course id')  # зависит от course_id model
+    language = models.ForeignKey(to=Language, on_delete=models.CASCADE, verbose_name='Language')  # язык курса совпадает с языком теста
+    total_mark = models.FloatField() #оценка за тест для студента, а не в целом максимальная за тест
 
     def __str__(self):
-        return f'Final mark for Quiz to Course {self.course.name} - {self.total_mark}'
+        return f'Final mark for Quiz to Course {self.course.title} - {self.total_mark}'
 
 
 class LessonQuiz(models.Model):
     # т. к. зависит от модели Lesson,то пока комментарием
     # lesson = models.OneToOneField(to=Lesson, on_delete=models.CASCADE,
-    # verbose_name='Lesson id')  # зависит от Lesson model
-    language = models.OneToOneField(to=Language, on_delete=models.CASCADE,
-                                    verbose_name='Language')  # язык курса совпадает с языком теста
+    #                               verbose_name='Lesson id')  # зависит от Lesson model
+
+    language = models.ForeignKey(to=Language, on_delete=models.CASCADE, verbose_name='Language')  # язык курса совпадает с языком теста
+
+    student = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Student") # студент, к которому привязывается конкретная оценка
+
     total_mark = models.FloatField()
 
     def __str__(self):
-        return f'Final mark for Quiz to Course {self.lesson.name} - {self.total_mark}'
+        return f'Final mark for Quiz to Lesson {self.lesson.name} - {self.total_mark}'
 
 
 class FinalQuizQuestion(models.Model):

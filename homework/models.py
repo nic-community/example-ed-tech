@@ -1,7 +1,8 @@
+import os
 import uuid
 from django.db import models
-from django.contrib.auth.models import User
 from django.core.validators import MaxValueValidator, MinValueValidator
+from user.models import User
 
 
 class HomeworkTaskModel(models.Model):
@@ -24,13 +25,20 @@ class HomeworkTaskModel(models.Model):
         ordering = ['created_at']
 
 
+def get_file_path(instance, filename):
+    ext = filename.split('.')[-1]
+    filename = "%s.%s" % (uuid.uuid4(), ext)
+    return os.path.join('uploads/homework', filename)
+
+
 class HomeworkAnswerModel(models.Model):
+
     """Модель для домашней работы от ученика"""
 
     student = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Студент")
     task = models.ForeignKey(HomeworkTaskModel, on_delete=models.CASCADE, verbose_name="Задание")
     content = models.TextField(verbose_name="Котент", blank=True)
-    files = models.FileField(upload_to='uploads/homework/{0}'.format(uuid.uuid4()), blank=True)
+    files = models.FileField(upload_to=get_file_path, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -48,7 +56,6 @@ class GradesForHomework(models.Model):
 
     homework = models.ForeignKey(HomeworkAnswerModel, on_delete=models.CASCADE, verbose_name="Домашняя работа")
     comments = models.TextField(verbose_name="Комментарии", blank=True)
-    # Добавить Курс
     grade = models.FloatField(validators=[MinValueValidator(0.0), MaxValueValidator(100.0)], verbose_name="Оценка")
 
     def __str__(self):
