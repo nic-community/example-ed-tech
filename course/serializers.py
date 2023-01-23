@@ -6,6 +6,7 @@ from rest_framework.renderers import JSONRenderer
 
 # ----- LANGUAGE MODEL SERIALIZERS -----
 class LanguageRequestSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(required=False)
     title = serializers.CharField(max_length=100)
     description = serializers.CharField(required=False)
 
@@ -37,6 +38,7 @@ class LanguageResponseSerializer(serializers.Serializer):
 
 # ----- LECTURER MODEL SERIALIZERS -----
 class LecturerRequestSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(required=False)
     first_name = serializers.CharField(max_length=50)
     last_name = serializers.CharField(max_length=50)
     phone_number = serializers.CharField(max_length=15, required=False)
@@ -93,6 +95,7 @@ class LecturerResponseSerializer(serializers.ModelSerializer):
 
 # ----- COURSE MODEL SERIALIZERS -----
 class CourseRequestSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(required=False)
     title = serializers.CharField()
     partner = serializers.CharField(max_length=200)
     topic = serializers.CharField(max_length=100)
