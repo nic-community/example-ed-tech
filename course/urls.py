@@ -7,9 +7,9 @@ from .views.language_view import LanguageViewSet
 from .views.course_view import CourseViewSet
 
 router = routers.SimpleRouter()
-router.register(r'languages', LanguageViewSet, basename='languages-view')
-router.register(r'lecturers', LecturerViewSet, basename='lecturers-view')
-router.register(r'courses', CourseViewSet, basename='courses-view')
+router.register(r'api/languages', LanguageViewSet, basename='languages-view')
+router.register(r'api/lecturers', LecturerViewSet, basename='lecturers-view')
+router.register(r'api/courses', CourseViewSet, basename='courses-view')
 
 
 urlpatterns = [
