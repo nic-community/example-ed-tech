@@ -4,17 +4,6 @@ from django.core.exceptions import ValidationError
 
 from homework.models import *
 
-# class LanguageModelTest():
-#     @pytest.mark.django_db
-#     def test_language_title(self):
-#         language = Language.objects.create(title="TestLanguage")
-#         assert language.title == "TestLanguage"
-
-#     @pytest.mark.django_db
-#     def test_language_title_max_length(self):
-#         language = Language.objects.create(title="English" * 20)
-#         assert len(language.title) <= 100
-
 
 class TestHomeworkTaskModel:
 
