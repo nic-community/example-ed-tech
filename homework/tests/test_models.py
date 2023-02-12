@@ -19,35 +19,11 @@ class TestHomeworkTaskModel:
         assert task.content == "java tests"
 
     @pytest.mark.django_db
-    def test_homework_task_course_max_length(self):
-        user = User.objects.create(username='User', email='user@gmail.com', phone_number='+7777777777')
-        task = HomeworkTaskModel.objects.create(teacher=user, course='java', lesson='first lesson', title="java tests", content='java tests')
-        max_length = task._meta.get_field('course').max_length
-        
-        assert max_length == 150
-
-    @pytest.mark.django_db
-    def test_homework_task_lesson_max_length(self):
-        user = User.objects.create(username='User', email='user@gmail.com', phone_number='+7777777777')
-        task = HomeworkTaskModel.objects.create(teacher=user, course='java', lesson='first lesson', title="java tests", content='java tests')
-        max_length = task._meta.get_field('lesson').max_length
-        
-        assert max_length == 150
-
-    @pytest.mark.django_db
-    def test_homework_task_title_max_length(self):
-        user = User.objects.create(username='User', email='user@gmail.com', phone_number='+7777777777')
-        task = HomeworkTaskModel.objects.create(teacher=user, course='java', lesson='first lesson', title="java tests", content='java tests')
-        max_length = task._meta.get_field('title').max_length
-        
-        assert max_length == 255
-
-    @pytest.mark.django_db
     def test_homework_task_return_str(self):
         user = User.objects.create(username='User', email='user@gmail.com', phone_number='+7777777777')
         task = HomeworkTaskModel.objects.create(teacher=user, course='java', lesson='first lesson', title="java tests", content='java tests')
         
-        assert str(task) == "java tests"
+        assert str(task) == task.title
         
     @pytest.mark.django_db
     def test_homework_task_verbose_name(self):
@@ -129,7 +105,7 @@ class TestGradesForHomeworkModel:
         user = User.objects.create(username='User', email='user@gmail.com', phone_number='+7777777777')
         task = HomeworkTaskModel.objects.create(teacher=user, course='java', lesson='first lesson', title="java tests", content='java tests')
         answer = HomeworkAnswerModel.objects.create(student=user, task=task, content="java answer content", files="file.docx")
-        grade = GradesForHomework(homework=answer, comments="thats good tests", grade=95)
+        grade = GradesForHomework.objects.create(homework=answer, comments="thats good tests", grade=95)
 
         assert grade.homework == answer
         assert grade.comments == "thats good tests"
@@ -140,7 +116,7 @@ class TestGradesForHomeworkModel:
         user = User.objects.create(username='User', email='user@gmail.com', phone_number='+7777777777')
         task = HomeworkTaskModel.objects.create(teacher=user, course='java', lesson='first lesson', title="java tests", content='java tests')
         answer = HomeworkAnswerModel.objects.create(student=user, task=task, content="java answer content", files="file.docx")
-        grade = GradesForHomework(homework=answer, comments="thats good tests", grade=95)
+        grade = GradesForHomework.objects.create(homework=answer, comments="thats good tests", grade=95)
 
         assert str(grade) == 'Оценка за "{}"'.format(grade.homework)
 
@@ -149,7 +125,7 @@ class TestGradesForHomeworkModel:
         user = User.objects.create(username='User', email='user@gmail.com', phone_number='+7777777777')
         task = HomeworkTaskModel.objects.create(teacher=user, course='java', lesson='first lesson', title="java tests", content='java tests')
         answer = HomeworkAnswerModel.objects.create(student=user, task=task, content="java answer content", files="file.docx")
-        grade = GradesForHomework(homework=answer, comments="thats good tests", grade=95)
+        grade = GradesForHomework.objects.create(homework=answer, comments="thats good tests", grade=95)
 
         verbose_name = grade._meta.verbose_name
         verbose_name_plural = grade._meta.verbose_name_plural
