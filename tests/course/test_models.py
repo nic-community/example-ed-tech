@@ -1,3 +1,5 @@
+import pytest
+
 from django.test import TestCase
 from course.models import *
 
@@ -8,17 +10,20 @@ class LanguageModelTest(TestCase):
         language = Language.objects.create(title='TestTitle')
 
     # title
+    @pytest.mark.django_db
     def test_title_label(self):
         language = Language.objects.get(id=1)
         field_label = language._meta.get_field('title').verbose_name
         self.assertEquals(field_label, 'title')
 
+    @pytest.mark.django_db
     def test_title_max_length(self):
         language = Language.objects.get(id=1)
         max_length = language._meta.get_field('title').max_length
         self.assertEquals(max_length, 100)
 
     # str method
+    @pytest.mark.django_db
     def test_language_str_method(self):
         language = Language.objects.get(id=1)
         self.assertEquals(language.__str__(), 'TestTitle')

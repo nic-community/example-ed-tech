@@ -25,19 +25,20 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'course.apps.CourseConfig',
+    'homework.apps.HomeworkConfig',
+    'lesson.apps.LessonConfig',
+    'quiz.apps.QuizConfig',
+    'user.apps.UserConfig',
+
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'course.apps.CourseConfig',
-    'homework.apps.HomeworkConfig',
-    'lesson.apps.LessonConfig',
-    'quiz.apps.QuizConfig',
-    'user.apps.UserConfig',
     'rest_framework_simplejwt',
-    'rest_framework'
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
