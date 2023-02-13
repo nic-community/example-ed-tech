@@ -1,151 +1,268 @@
+from unittest import TestCase
 import pytest
-
-from django.test import TestCase
 from course.models import *
+from user.models import User
 
+
+# ALL TESTS MADE WITH 'pytest-django' LIBRARY
 # ---------------------- LANGUAGE MODEL ----------------------
-class LanguageModelTest(TestCase):
-    @classmethod
-    def setUpTestData(cls):
-        language = Language.objects.create(title='TestTitle')
-
-    # title
-    @pytest.mark.django_db
-    def test_title_label(self):
-        language = Language.objects.get(id=1)
-        field_label = language._meta.get_field('title').verbose_name
-        self.assertEquals(field_label, 'title')
+class LanguageModelTest:
 
     @pytest.mark.django_db
-    def test_title_max_length(self):
-        language = Language.objects.get(id=1)
-        max_length = language._meta.get_field('title').max_length
-        self.assertEquals(max_length, 100)
+    def test_language_contents_name(self):
+        language = Language.objects.create(title='TestLanguageTitle')
 
-    # str method
+        assert language.title == 'TestLanguageTitle'
+
     @pytest.mark.django_db
-    def test_language_str_method(self):
-        language = Language.objects.get(id=1)
-        self.assertEquals(language.__str__(), 'TestTitle')
+    def test_language_return_str(self):
+        language = Language.objects.create(title='TestLanguageTitle')
+
+        assert str(language) == language.title
+
+    @pytest.mark.django_db
+    def test_language_verbose_name(self):
+        language = Language.objects.create(title='TestLanguageTitle')
+
+        verbose_name = language._meta.verbose_name
+        verbose_name_plural = language._meta.verbose_name_plural
+
+        assert verbose_name == 'Язык'
+        assert verbose_name_plural == 'Языки'
+
+    @pytest.mark.django_db
+    def test_language_ordering(self):
+        language0 = Language.objects.create(title='TestLanguageTitle0')
+        language1 = Language.objects.create(title='TestLanguageTitle1')
+        language2 = Language.objects.create(title='TestLanguageTitle2')
+
+        languages = Language.objects.all()
+        languages = list(languages)
+
+        assert languages[0] == language0
+        assert languages[1] == language1
+        assert languages[2] == language2
 
 
 # ---------------------- LECTURER MODEL ----------------------
-class LecturerModelTest(TestCase):
-    @classmethod
-    def setUpTestData(cls):
-        lecturer = Lecturer.objects.create(first_name='TestName', last_name='TestLastName')
+class LecturerModelTest:
+    @pytest.mark.django_db
+    def test_lecturer_contents_name(self):
+        lecturer = Lecturer.objects.create(
+            first_name='TestLecturerFirstName',
+            last_name='TestLecturerLastName',
+            phone_number='+77083334123',
+            email='test@gmail.com'
+        )
 
-    # first_name
-    def test_first_name_label(self):
-        lecturer = Lecturer.objects.get(id=1)
-        field_label = lecturer._meta.get_field('first_name').verbose_name
-        self.assertEquals(field_label, 'first name')
+        assert lecturer.first_name == 'TestLecturerFirstName'
+        assert lecturer.last_name == 'TestLecturerLastName'
+        assert lecturer.phone_number == '+77083334123'
+        assert lecturer.email == 'test@gmail.com'
 
-    def test_first_name_max_length(self):
-        lecturer = Lecturer.objects.get(id=1)
-        max_length = lecturer._meta.get_field('first_name').max_length
-        self.assertEquals(max_length, 50)
+    @pytest.mark.django_db
+    def test_lecturer_return_str(self):
+        lecturer = Lecturer.objects.create(
+            first_name='TestLecturerFirstName',
+            last_name='TestLecturerLastName',
+            phone_number='+77083334123',
+            email='test@gmail.com'
+        )
 
-    # last_name
-    def test_last_name_label(self):
-        lecturer = Lecturer.objects.get(id=1)
-        field_label = lecturer._meta.get_field('last_name').verbose_name
-        self.assertEquals(field_label, 'last name')
+        assert str(lecturer) == f"{lecturer.last_name}/{lecturer.first_name}"
 
-    def test_last_name_max_length(self):
-        lecturer = Lecturer.objects.get(id=1)
-        max_length = lecturer._meta.get_field('last_name').max_length
-        self.assertEquals(max_length, 50)
+    @pytest.mark.django_db
+    def test_lecturer_verbose_name(self):
+        lecturer = Lecturer.objects.create(
+            first_name='TestLecturerFirstName',
+            last_name='TestLecturerLastName',
+            phone_number='+77083334123',
+            email='test@gmail.com'
+        )
 
-    # str method
-    def test_lecturer_str_method(self):
-        lecturer = Lecturer.objects.get(id=1)
-        self.assertEquals(lecturer.__str__(), 'Full name: TestLastName TestName')
+        verbose_name = lecturer._meta.verbose_name
+        verbose_name_plural = lecturer._meta.verbose_name_plural
+
+        assert verbose_name == 'Лектор'
+        assert verbose_name_plural == 'Лекторы'
+
+    @pytest.mark.django_db
+    def test_lecturer_ordering(self):
+        lecturer0 = Lecturer.objects.create(
+            first_name='TestLecturerFirstName0',
+            last_name='TestLecturerLastName0',
+            phone_number='+77083334120',
+            email='test0@gmail.com'
+        )
+        lecturer1 = Lecturer.objects.create(
+            first_name='TestLecturerFirstName1',
+            last_name='TestLecturerLastName1',
+            phone_number='+77083334121',
+            email='test1@gmail.com'
+        )
+        lecturer2 = Lecturer.objects.create(
+            first_name='TestLecturerFirstName2',
+            last_name='TestLecturerLastName2',
+            phone_number='+77083334122',
+            email='test2@gmail.com'
+        )
+
+        lecturers = Lecturer.objects.all()
+        lecturers = list(lecturers)
+
+        assert lecturers[0] == lecturer0
+        assert lecturers[1] == lecturer1
+        assert lecturers[2] == lecturer2
 
 
 # ---------------------- COURSE MODEL ----------------------
-class CourseModelTest(TestCase):
-    @classmethod
-    def setUpTestData(cls):
-        language = Language.objects.create(id=1, title='TestLanguage')
+class CourseModelTest:
+    @pytest.mark.django_db
+    def course_test_contents_name(self):
+        language = Language.objects.create(title='TestLanguageTitle')
         lecturer = Lecturer.objects.create(
-            id=1,
-            first_name='TestName',
-            last_name='TestLastName'
+            first_name='TestLecturerFirstName',
+            last_name='TestLecturerLastName',
+            phone_number='+77083334123',
+            email='test@gmail.com'
         )
         course = Course.objects.create(
-            id=1,
-            title='TestCourse',
-            partner='TestPartner',
-            topic='TestTopic',
+            title='TestCourseTitle',
+            partner='TestCoursePartner',
+            topic='TestCourseTopic',
             has_certificate=True,
             approximate_time_to_complete=30,
-            rating=4.34,
-            ratings_number=156,
+            rating=4.46,
+            ratings_number=6,
             language=language,
             lecturer=lecturer
         )
 
-    # title
-    def test_title_label(self):
-        course = Course.objects.get(id=1)
-        field_label = course._meta.get_field('title').verbose_name
-        self.assertEquals(field_label, 'title')
+        assert course.title == 'TestCourseTitle'
+        assert course.partner == 'TestCoursePartner'
+        assert course.topic == 'TestCourseTopic'
+        assert course.has_certificate is True
+        assert course.approximate_time_to_complete == 30
+        assert course.rating == 4.46
+        assert course.ratings_number == 6
+        assert course.language == language
+        assert course.lecturer == lecturer
 
-    # partner
-    def test_partner_label(self):
-        course = Course.objects.get(id=1)
-        field_label = course._meta.get_field('partner').verbose_name
-        self.assertEquals(field_label, 'partner')
+    @pytest.mark.django_db
+    def course_test_return_str(self):
+        language = Language.objects.create(title='TestLanguageTitle')
+        lecturer = Lecturer.objects.create(
+            first_name='TestLecturerFirstName',
+            last_name='TestLecturerLastName',
+            phone_number='+77083334123',
+            email='test@gmail.com'
+        )
+        course = Course.objects.create(
+            title='TestCourseTitle',
+            partner='TestCoursePartner',
+            topic='TestCourseTopic',
+            has_certificate=True,
+            approximate_time_to_complete=30,
+            rating=4.46,
+            ratings_number=6,
+            language=language,
+            lecturer=lecturer
+        )
 
-    def test_partner_max_length(self):
-        course = Course.objects.get(id=1)
-        max_length = course._meta.get_field('partner').max_length
-        self.assertEquals(max_length, 200)
+        assert str(course) == f"{course.title}/Partner: {course.partner}/Topic: {course.topic}"
 
-    # topic
-    def test_topic_label(self):
-        course = Course.objects.get(id=1)
-        field_label = course._meta.get_field('topic').verbose_name
-        self.assertEquals(field_label, 'topic')
+    @pytest.mark.django_db
+    def test_course_verbose_name(self):
+        language = Language.objects.create(title='TestLanguageTitle')
+        lecturer = Lecturer.objects.create(
+            first_name='TestLecturerFirstName',
+            last_name='TestLecturerLastName',
+            phone_number='+77083334123',
+            email='test@gmail.com'
+        )
+        course = Course.objects.create(
+            title='TestCourseTitle',
+            partner='TestCoursePartner',
+            topic='TestCourseTopic',
+            has_certificate=True,
+            approximate_time_to_complete=30,
+            rating=4.46,
+            ratings_number=6,
+            language=language,
+            lecturer=lecturer
+        )
 
-    def test_topic_max_length(self):
-        course = Course.objects.get(id=1)
-        max_length = course._meta.get_field('topic').max_length
-        self.assertEquals(max_length, 100)
+        verbose_name = course._meta.verbose_name
+        verbose_name_plural = course._meta.verbose_name_plural
 
-    # has_certificate
-    def test_has_certificate_label(self):
-        course = Course.objects.get(id=1)
-        field_label = course._meta.get_field('has_certificate').verbose_name
-        self.assertEquals(field_label, 'has certificate')
+        assert verbose_name == 'Курс'
+        assert verbose_name_plural == 'Курсы'
 
-    # approximate_time_to_complete
-    def test_approximate_time_to_complete_label(self):
-        course = Course.objects.get(id=1)
-        field_label = course._meta.get_field('approximate_time_to_complete').verbose_name
-        self.assertEquals(field_label, 'approximate time to complete')
+    @pytest.mark.django_db
+    def test_course_ordering(self):
+        # LANGUAGES
+        language0 = Language.objects.create(title='TestLanguageTitle0')
+        language1 = Language.objects.create(title='TestLanguageTitle1')
+        language2 = Language.objects.create(title='TestLanguageTitle2')
 
-    # rating
-    def test_rating_label(self):
-        course = Course.objects.get(id=1)
-        field_label = course._meta.get_field('rating').verbose_name
-        self.assertEquals(field_label, 'rating')
+        # LECTURERS
+        lecturer0 = Lecturer.objects.create(
+            first_name='TestLecturerFirstName0',
+            last_name='TestLecturerLastName0',
+            phone_number='+77083334120',
+            email='test0@gmail.com'
+        )
+        lecturer1 = Lecturer.objects.create(
+            first_name='TestLecturerFirstName1',
+            last_name='TestLecturerLastName1',
+            phone_number='+77083334121',
+            email='test1@gmail.com'
+        )
+        lecturer2 = Lecturer.objects.create(
+            first_name='TestLecturerFirstName2',
+            last_name='TestLecturerLastName2',
+            phone_number='+77083334122',
+            email='test2@gmail.com'
+        )
 
-    # ratings_number
-    def test_ratings_number_label(self):
-        course = Course.objects.get(id=1)
-        field_label = course._meta.get_field('ratings_number').verbose_name
-        self.assertEquals(field_label, 'ratings number')
+        # COURSES
+        course0 = Course.objects.create(
+            title='TestCourseTitle0',
+            partner='TestCoursePartner0',
+            topic='TestCourseTopic0',
+            has_certificate=True,
+            approximate_time_to_complete=30,
+            rating=4.46,
+            ratings_number=6,
+            language=language0,
+            lecturer=lecturer0
+        )
+        course1 = Course.objects.create(
+            title='TestCourseTitle1',
+            partner='TestCoursePartner1',
+            topic='TestCourseTopic1',
+            has_certificate=True,
+            approximate_time_to_complete=25,
+            rating=4.3,
+            ratings_number=7,
+            language=language1,
+            lecturer=lecturer1
+        )
+        course2 = Course.objects.create(
+            title='TestCourseTitle2',
+            partner='TestCoursePartner2',
+            topic='TestCourseTopic2',
+            has_certificate=False,
+            approximate_time_to_complete=23,
+            rating=4.0,
+            ratings_number=10,
+            language=language2,
+            lecturer=lecturer2
+        )
 
-    # language (FOREIGN KEY)
-    def test_language_foreign_key_label(self):
-        course = Course.objects.get(id=1)
-        field_label = course._meta.get_field('language').verbose_name
-        self.assertEquals(field_label, 'Язык курса')
+        courses = Course.objects.all()
+        courses = list(courses)
 
-    # lecturer (FOREIGN KEY)
-    def test_lecturer_foreign_key_label(self):
-        course = Course.objects.get(id=1)
-        field_label = course._meta.get_field('lecturer').verbose_name
-        self.assertEquals(field_label, 'Лектор')
+        assert courses[0] == course0
+        assert courses[1] == course1
+        assert courses[2] == course2
