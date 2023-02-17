@@ -28,7 +28,7 @@ class TestHomeworkTaskApi():
     def test_list_get(self, init_objects, client):
         task = init_objects[1]
 
-        url = '/homework/api/tasks/'
+        url = '/api/v1/homework/tasks/'
         response = client.get(url)
 
         assert response.status_code == status.HTTP_200_OK
@@ -42,7 +42,7 @@ class TestHomeworkTaskApi():
     def test_detail_get(self, init_objects, client):
         task = init_objects[1]
         
-        url = '/homework/api/tasks/'+str(task.id)+'/'
+        url = '/api/v1/homework/tasks/'+str(task.id)+'/'
         response = client.get(url)
 
         assert response.status_code == status.HTTP_200_OK 
@@ -51,7 +51,7 @@ class TestHomeworkTaskApi():
     def test_post(self, init_objects, client):
         user = init_objects[0]
 
-        url = '/homework/api/tasks/'
+        url = '/api/v1/homework/tasks/'
         data = {'teacher':user.id, 'course': 'python', 'lesson': '1 lesson', 'title': 'django tests', 'content': 'django tests'}
         response = client.post(url, data)
 
@@ -66,7 +66,7 @@ class TestHomeworkTaskApi():
     def test_put(self, init_objects, client):
         user, task = init_objects[0:2]
 
-        url = '/homework/api/tasks/'+str(task.id)+'/'
+        url = '/api/v1/homework/tasks/'+str(task.id)+'/'
         data = {'teacher':user.id, 'course': 'python', 'lesson': '1 lesson', 'title': 'django tests', 'content': 'django tests'}
         response = client.put(url, json.dumps(data), content_type='application/json')
      
@@ -76,7 +76,7 @@ class TestHomeworkTaskApi():
     def test_delete(self, init_objects, client):
         task = init_objects[1]
 
-        url = '/homework/api/tasks/'+str(task.id)+'/'
+        url = '/api/v1/homework/tasks/'+str(task.id)+'/'
         response = client.delete(url)
         assert response.status_code == status.HTTP_204_NO_CONTENT
 
@@ -87,7 +87,7 @@ class TestHomeworkAnswerApi():
     def test_list_get(self, init_objects, client):
         answer = init_objects[2]
 
-        url = '/homework/api/answers/'
+        url = '/api/v1/homework/answers/'
         response = client.get(url)
 
         assert response.status_code == status.HTTP_200_OK
@@ -99,7 +99,7 @@ class TestHomeworkAnswerApi():
     def test_detail_get(self, init_objects, client):
         answer = init_objects[2]
 
-        url = '/homework/api/answers/'+str(answer.id)+'/'
+        url = '/api/v1/homework/answers/'+str(answer.id)+'/'
         response = client.get(url)
 
         assert response.status_code == status.HTTP_200_OK 
@@ -108,7 +108,7 @@ class TestHomeworkAnswerApi():
     def test_post(self, init_objects, client):
         user, task = init_objects[0:2]
 
-        url = '/homework/api/answers/'
+        url = '/api/v1/homework/answers/'
         data = {'student':user.id, 'task': task.id, 'content': 'task content 2'}
         response = client.post(url, data)
 
@@ -121,7 +121,7 @@ class TestHomeworkAnswerApi():
     def test_put(self, init_objects, client):
         user, task, answer = init_objects[0:3]
         
-        url = '/homework/api/answers/'+str(answer.id)+"/"
+        url = '/api/v1/homework/answers/'+str(answer.id)+"/"
         data = {'student':user.id, 'task': task.id, 'content': 'task content 3'}
         response = client.put(url, json.dumps(data), content_type='application/json')
         
@@ -133,7 +133,7 @@ class TestHomeworkAnswerApi():
     def test_delete(self, init_objects, client):
         answer = init_objects[2]
 
-        url = '/homework/api/answers/'+str(answer.id)+"/"
+        url = '/api/v1/homework/answers/'+str(answer.id)+"/"
         response = client.delete(url)
         assert response.status_code == status.HTTP_204_NO_CONTENT
 
@@ -144,7 +144,7 @@ class TestHomeworkGradeApi():
     def test_list_get(self, init_objects, client):
         grade = init_objects[3]
 
-        url = '/homework/api/grades/'
+        url = '/api/v1/homework/grades/'
         response = client.get(url)
 
         assert response.status_code == status.HTTP_200_OK
@@ -156,7 +156,7 @@ class TestHomeworkGradeApi():
     def test_detail_get(self, init_objects, client):
         grade = init_objects[3]
 
-        url = '/homework/api/grades/'+str(grade.id)+'/'
+        url = '/api/v1/homework/grades/'+str(grade.id)+'/'
         response = client.get(url)
 
         assert response.status_code == status.HTTP_200_OK 
@@ -165,7 +165,7 @@ class TestHomeworkGradeApi():
     def test_post(self, init_objects, client):
         answer = init_objects[2]
 
-        url = '/homework/api/grades/'
+        url = '/api/v1/homework/grades/'
         data = {'homework':answer.id, 'comments': 'test comment 2', 'grade': 90.5}
         response = client.post(url, data)
 
@@ -178,7 +178,7 @@ class TestHomeworkGradeApi():
     def test_put(self, init_objects, client):
         answer, grade = init_objects[2:4]
 
-        url = '/homework/api/grades/'+str(grade.id)+'/'
+        url = '/api/v1/homework/grades/'+str(grade.id)+'/'
         data = {'homework':answer.id, 'comments': 'test comment 2', 'grade': 90.5}
         response = client.put(url, json.dumps(data), content_type='application/json')
 
@@ -190,7 +190,7 @@ class TestHomeworkGradeApi():
     def test_delete(self, init_objects, client):
         grade = init_objects[3]
 
-        url = '/homework/api/grades/'+str(grade.id)+'/'
+        url = '/api/v1/homework/grades/'+str(grade.id)+'/'
         response = client.delete(url)
         assert response.status_code == status.HTTP_204_NO_CONTENT
 
