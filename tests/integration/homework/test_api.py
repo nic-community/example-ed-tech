@@ -8,17 +8,28 @@ from user.models import User
 from homework.models import *
 
 
-class TestHomeworkTaskApi():
+@pytest.fixture
+def init_objects():
+    user = User.objects.create(username='User', email='user@gmail.com', phone_number='+7777777777')
+    task = HomeworkTaskModel.objects.create(teacher=user, course='java', lesson='first lesson', title="java tests", content='java tests')
+    answer = HomeworkAnswerModel.objects.create(student=user, task=task, content="java answer content")
+    grade = GradesForHomework.objects.create(homework=answer, comments="thats good tests", grade=95)
 
-    client = Client()
+    return user, task, answer, grade
+
+
+@pytest.fixture
+def client():
+    return Client()
+
+class TestHomeworkTaskApi():
     
     @pytest.mark.django_db
-    def test_list_get(self):
-        user = User.objects.create(username='User', email='user@gmail.com', phone_number='+7777777777')
-        task = HomeworkTaskModel.objects.create(teacher=user, course='java', lesson='first lesson', title="java tests", content='java tests')
+    def test_list_get(self, init_objects, client):
+        task = init_objects[1]
 
         url = '/homework/api/tasks/'
-        response = self.client.get(url)
+        response = client.get(url)
 
         assert response.status_code == status.HTTP_200_OK
         assert response.json()[0]["teacher"] == task.teacher.id
@@ -28,22 +39,21 @@ class TestHomeworkTaskApi():
         assert response.json()[0]['content'] == task.content
 
     @pytest.mark.django_db
-    def test_detail_get(self):
-        user = User.objects.create(username='User', email='user@gmail.com', phone_number='+7777777777')
-        task = HomeworkTaskModel.objects.create(teacher=user, course='java', lesson='first lesson', title="java tests", content='java tests')
+    def test_detail_get(self, init_objects, client):
+        task = init_objects[1]
         
         url = '/homework/api/tasks/'+str(task.id)+'/'
-        response = self.client.get(url)
+        response = client.get(url)
 
         assert response.status_code == status.HTTP_200_OK 
 
     @pytest.mark.django_db
-    def test_post(self):
-        user = User.objects.create(username='User', email='user@gmail.com', phone_number='+7777777777')
+    def test_post(self, init_objects, client):
+        user = init_objects[0]
 
         url = '/homework/api/tasks/'
         data = {'teacher':user.id, 'course': 'python', 'lesson': '1 lesson', 'title': 'django tests', 'content': 'django tests'}
-        response = self.client.post(url, data)
+        response = client.post(url, data)
 
         assert response.status_code == status.HTTP_201_CREATED
         assert response.json()["teacher_id"] == data['teacher']
@@ -53,38 +63,32 @@ class TestHomeworkTaskApi():
         assert response.json()['content'] == data['content']
 
     @pytest.mark.django_db
-    def test_put(self):
-        user = User.objects.create(username='User', email='user@gmail.com', phone_number='+7777777777')
-        task = HomeworkTaskModel.objects.create(teacher=user, course='java', lesson='first lesson', title="java tests", content='java tests')
-        
+    def test_put(self, init_objects, client):
+        user, task = init_objects[0:2]
+
         url = '/homework/api/tasks/'+str(task.id)+'/'
         data = {'teacher':user.id, 'course': 'python', 'lesson': '1 lesson', 'title': 'django tests', 'content': 'django tests'}
-        response = self.client.put(url, json.dumps(data), content_type='application/json')
+        response = client.put(url, json.dumps(data), content_type='application/json')
      
         assert response.status_code == status.HTTP_201_CREATED
 
     @pytest.mark.django_db
-    def test_delete(self):
-        user = User.objects.create(username='User', email='user@gmail.com', phone_number='+7777777777')
-        task = HomeworkTaskModel.objects.create(teacher=user, course='java', lesson='first lesson', title="java tests", content='java tests')
-        
+    def test_delete(self, init_objects, client):
+        task = init_objects[1]
+
         url = '/homework/api/tasks/'+str(task.id)+'/'
-        response = self.client.delete(url)
+        response = client.delete(url)
         assert response.status_code == status.HTTP_204_NO_CONTENT
 
 
 class TestHomeworkAnswerApi():
 
-    client = Client()
-
     @pytest.mark.django_db
-    def test_list_get(self):
-        user = User.objects.create(username='User', email='user@gmail.com', phone_number='+7777777777')
-        task = HomeworkTaskModel.objects.create(teacher=user, course='java', lesson='first lesson', title="java tests", content='java tests')
-        answer = HomeworkAnswerModel.objects.create(student=user, task=task, content="java answer content")
+    def test_list_get(self, init_objects, client):
+        answer = init_objects[2]
 
         url = '/homework/api/answers/'
-        response = self.client.get(url)
+        response = client.get(url)
 
         assert response.status_code == status.HTTP_200_OK
         assert response.json()[0]["student"] == answer.student.id
@@ -92,25 +96,21 @@ class TestHomeworkAnswerApi():
         assert response.json()[0]['content'] == answer.content
 
     @pytest.mark.django_db
-    def test_detail_get(self):
-        user = User.objects.create(username='User', email='user@gmail.com', phone_number='+7777777777')
-        task = HomeworkTaskModel.objects.create(teacher=user, course='java', lesson='first lesson', title="java tests", content='java tests')
-        answer = HomeworkAnswerModel.objects.create(student=user, task=task, content="java answer content", files="file.docx")
+    def test_detail_get(self, init_objects, client):
+        answer = init_objects[2]
 
         url = '/homework/api/answers/'+str(answer.id)+'/'
-        response = self.client.get(url)
+        response = client.get(url)
 
         assert response.status_code == status.HTTP_200_OK 
 
     @pytest.mark.django_db
-    def test_post(self):
-        user = User.objects.create(username='User', email='user@gmail.com', phone_number='+7777777777')
-        task = HomeworkTaskModel.objects.create(teacher=user, course='java', lesson='first lesson', title="java tests", content='java tests')
-        answer = HomeworkAnswerModel.objects.create(student=user, task=task, content="java answer content", files="file.docx")
+    def test_post(self, init_objects, client):
+        user, task = init_objects[0:2]
 
         url = '/homework/api/answers/'
         data = {'student':user.id, 'task': task.id, 'content': 'task content 2'}
-        response = self.client.post(url, data)
+        response = client.post(url, data)
 
         assert response.status_code == status.HTTP_201_CREATED
         assert response.json()["student_id"] == data['student']
@@ -118,43 +118,34 @@ class TestHomeworkAnswerApi():
         assert response.json()['content'] == data['content']
   
     @pytest.mark.django_db
-    def test_put(self):
-        user = User.objects.create(username='User', email='user@gmail.com', phone_number='+7777777777')
-        task = HomeworkTaskModel.objects.create(teacher=user, course='java', lesson='first lesson', title="java tests", content='java tests')
-        answer = HomeworkAnswerModel.objects.create(student=user, task=task, content="java answer content", files="file.docx")
-
+    def test_put(self, init_objects, client):
+        user, task, answer = init_objects[0:3]
+        
         url = '/homework/api/answers/'+str(answer.id)+"/"
         data = {'student':user.id, 'task': task.id, 'content': 'task content 3'}
-        response = self.client.put(url, json.dumps(data), content_type='application/json')
+        response = client.put(url, json.dumps(data), content_type='application/json')
         
         assert response.status_code == status.HTTP_201_CREATED
         assert response.json()["content"] == data["content"]
 
 
     @pytest.mark.django_db
-    def test_delete(self):
-        user = User.objects.create(username='User', email='user@gmail.com', phone_number='+7777777777')
-        task = HomeworkTaskModel.objects.create(teacher=user, course='java', lesson='first lesson', title="java tests", content='java tests')
-        answer = HomeworkAnswerModel.objects.create(student=user, task=task, content="java answer content", files="file.docx")
+    def test_delete(self, init_objects, client):
+        answer = init_objects[2]
 
         url = '/homework/api/answers/'+str(answer.id)+"/"
-        response = self.client.delete(url)
+        response = client.delete(url)
         assert response.status_code == status.HTTP_204_NO_CONTENT
 
 
 class TestHomeworkGradeApi():
 
-    client = Client()
-
     @pytest.mark.django_db
-    def test_list_get(self):
-        user = User.objects.create(username='User', email='user@gmail.com', phone_number='+7777777777')
-        task = HomeworkTaskModel.objects.create(teacher=user, course='java', lesson='first lesson', title="java tests", content='java tests')
-        answer = HomeworkAnswerModel.objects.create(student=user, task=task, content="java answer content")
-        grade = GradesForHomework.objects.create(homework=answer, comments="thats good tests", grade=95)
+    def test_list_get(self, init_objects, client):
+        grade = init_objects[3]
 
         url = '/homework/api/grades/'
-        response = self.client.get(url)
+        response = client.get(url)
 
         assert response.status_code == status.HTTP_200_OK
         assert response.json()[0]['homework'] == grade.homework.id
@@ -162,27 +153,21 @@ class TestHomeworkGradeApi():
         assert response.json()[0]['grade'] == grade.grade
 
     @pytest.mark.django_db
-    def test_detail_get(self):
-        user = User.objects.create(username='User', email='user@gmail.com', phone_number='+7777777777')
-        task = HomeworkTaskModel.objects.create(teacher=user, course='java', lesson='first lesson', title="java tests", content='java tests')
-        answer = HomeworkAnswerModel.objects.create(student=user, task=task, content="java answer content")
-        grade = GradesForHomework.objects.create(homework=answer, comments="thats good tests", grade=95)
+    def test_detail_get(self, init_objects, client):
+        grade = init_objects[3]
 
         url = '/homework/api/grades/'+str(grade.id)+'/'
-        response = self.client.get(url)
+        response = client.get(url)
 
         assert response.status_code == status.HTTP_200_OK 
 
     @pytest.mark.django_db
-    def test_post(self):
-        user = User.objects.create(username='User', email='user@gmail.com', phone_number='+7777777777')
-        task = HomeworkTaskModel.objects.create(teacher=user, course='java', lesson='first lesson', title="java tests", content='java tests')
-        answer = HomeworkAnswerModel.objects.create(student=user, task=task, content="java answer content")
-        grade = GradesForHomework.objects.create(homework=answer, comments="thats good tests", grade=95)
+    def test_post(self, init_objects, client):
+        answer = init_objects[2]
 
         url = '/homework/api/grades/'
         data = {'homework':answer.id, 'comments': 'test comment 2', 'grade': 90.5}
-        response = self.client.post(url, data)
+        response = client.post(url, data)
 
         assert response.status_code == status.HTTP_201_CREATED
         assert response.json()['homework_id'] == data['homework']
@@ -190,28 +175,22 @@ class TestHomeworkGradeApi():
         assert response.json()['grade'] == data['grade']
     
     @pytest.mark.django_db
-    def test_put(self):
-        user = User.objects.create(username='User', email='user@gmail.com', phone_number='+7777777777')
-        task = HomeworkTaskModel.objects.create(teacher=user, course='java', lesson='first lesson', title="java tests", content='java tests')
-        answer = HomeworkAnswerModel.objects.create(student=user, task=task, content="java answer content")
-        grade = GradesForHomework.objects.create(homework=answer, comments="thats good tests", grade=95)
+    def test_put(self, init_objects, client):
+        answer, grade = init_objects[2:4]
 
         url = '/homework/api/grades/'+str(grade.id)+'/'
         data = {'homework':answer.id, 'comments': 'test comment 2', 'grade': 90.5}
-        response = self.client.put(url, json.dumps(data), content_type='application/json')
+        response = client.put(url, json.dumps(data), content_type='application/json')
 
         assert response.status_code == status.HTTP_201_CREATED
         assert response.json()['comments'] == data['comments']
         assert response.json()['grade'] == data['grade']
 
     @pytest.mark.django_db
-    def test_delete(self):
-        user = User.objects.create(username='User', email='user@gmail.com', phone_number='+7777777777')
-        task = HomeworkTaskModel.objects.create(teacher=user, course='java', lesson='first lesson', title="java tests", content='java tests')
-        answer = HomeworkAnswerModel.objects.create(student=user, task=task, content="java answer content")
-        grade = GradesForHomework.objects.create(homework=answer, comments="thats good tests", grade=95)
+    def test_delete(self, init_objects, client):
+        grade = init_objects[3]
 
         url = '/homework/api/grades/'+str(grade.id)+'/'
-        response = self.client.delete(url)
+        response = client.delete(url)
         assert response.status_code == status.HTTP_204_NO_CONTENT
 
