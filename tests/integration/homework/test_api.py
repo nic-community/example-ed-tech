@@ -25,7 +25,7 @@ def client():
 class TestHomeworkTaskApi():
     
     @pytest.mark.django_db
-    def test_list_get(self, init_objects, client):
+    def test_get_list_of_tasks(self, init_objects, client):
         task = init_objects[1]
 
         url = '/api/v1/homework/tasks/'
@@ -45,7 +45,7 @@ class TestHomeworkTaskApi():
 
 
     @pytest.mark.django_db
-    def test_detail_get(self, init_objects, client):
+    def test_get_detail_task(self, init_objects, client):
         task = init_objects[1]
         
         url = '/api/v1/homework/tasks/'+str(task.id)+'/'
@@ -60,7 +60,7 @@ class TestHomeworkTaskApi():
         assert str(e.value) == "Field 'id' expected a number but got 'bad-url'."
 
     @pytest.mark.django_db
-    def test_post(self, init_objects, client):
+    def test_create_task(self, init_objects, client):
         user = init_objects[0]
 
         url = '/api/v1/homework/tasks/'
@@ -85,7 +85,7 @@ class TestHomeworkTaskApi():
         assert response.json()['content'] == ['This field is required.']
 
     @pytest.mark.django_db
-    def test_put(self, init_objects, client):
+    def test_update_task(self, init_objects, client):
         user, task = init_objects[0:2]
 
         url = '/api/v1/homework/tasks/'+str(task.id)+'/'
@@ -113,7 +113,7 @@ class TestHomeworkTaskApi():
 
 
     @pytest.mark.django_db
-    def test_delete(self, init_objects, client):
+    def test_delete_task(self, init_objects, client):
         task = init_objects[1]
 
         url = '/api/v1/homework/tasks/'+str(task.id)+'/'
@@ -133,7 +133,7 @@ class TestHomeworkTaskApi():
 class TestHomeworkAnswerApi():
 
     @pytest.mark.django_db
-    def test_list_get(self, init_objects, client):
+    def test_get_list_of_answers(self, init_objects, client):
         answer = init_objects[2]
 
         url = '/api/v1/homework/answers/'
@@ -150,7 +150,7 @@ class TestHomeworkAnswerApi():
         assert response.status_code == status.HTTP_404_NOT_FOUND
 
     @pytest.mark.django_db
-    def test_detail_get(self, init_objects, client):
+    def test_get_detail_answer(self, init_objects, client):
         answer = init_objects[2]
 
         url = '/api/v1/homework/answers/'+str(answer.id)+'/'
@@ -166,7 +166,7 @@ class TestHomeworkAnswerApi():
 
 
     @pytest.mark.django_db
-    def test_post(self, init_objects, client):
+    def test_create_answer(self, init_objects, client):
         user, task = init_objects[0:2]
 
         url = '/api/v1/homework/answers/'
@@ -187,7 +187,7 @@ class TestHomeworkAnswerApi():
         assert response.json()['task'] == ['This field is required.']
   
     @pytest.mark.django_db
-    def test_put(self, init_objects, client):
+    def test_update_answer(self, init_objects, client):
         user, task, answer = init_objects[0:3]
         
         url = '/api/v1/homework/answers/'+str(answer.id)+"/"
@@ -216,7 +216,7 @@ class TestHomeworkAnswerApi():
 
 
     @pytest.mark.django_db
-    def test_delete(self, init_objects, client):
+    def test_delete_answer(self, init_objects, client):
         answer = init_objects[2]
 
         url = '/api/v1/homework/answers/'+str(answer.id)+"/"
@@ -237,7 +237,7 @@ class TestHomeworkAnswerApi():
 class TestHomeworkGradeApi():
 
     @pytest.mark.django_db
-    def test_list_get(self, init_objects, client):
+    def test_get_list_of_grades_for_answer(self, init_objects, client):
         grade = init_objects[3]
 
         url = '/api/v1/homework/grades/'
@@ -254,7 +254,7 @@ class TestHomeworkGradeApi():
         assert response.status_code == status.HTTP_404_NOT_FOUND
 
     @pytest.mark.django_db
-    def test_detail_get(self, init_objects, client):
+    def test_get_detail_grade_for_answer(self, init_objects, client):
         grade = init_objects[3]
 
         url = '/api/v1/homework/grades/'+str(grade.id)+'/'
@@ -270,7 +270,7 @@ class TestHomeworkGradeApi():
 
 
     @pytest.mark.django_db
-    def test_post(self, init_objects, client):
+    def test_create_grade_for_answer(self, init_objects, client):
         answer = init_objects[2]
 
         url = '/api/v1/homework/grades/'
@@ -290,7 +290,7 @@ class TestHomeworkGradeApi():
         assert response.json()['grade'] == ['This field is required.']
     
     @pytest.mark.django_db
-    def test_put(self, init_objects, client):
+    def test_update_grade_for_answer(self, init_objects, client):
         answer, grade = init_objects[2:4]
 
         url = '/api/v1/homework/grades/'+str(grade.id)+'/'
@@ -319,7 +319,7 @@ class TestHomeworkGradeApi():
         assert response.status_code == status.HTTP_400_BAD_REQUEST
 
     @pytest.mark.django_db
-    def test_delete(self, init_objects, client):
+    def test_delete_grade_for_answer(self, init_objects, client):
         grade = init_objects[3]
 
         url = '/api/v1/homework/grades/'+str(grade.id)+'/'
