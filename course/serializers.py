@@ -1,6 +1,10 @@
 from django.http import JsonResponse
 from rest_framework import serializers
-from .models import *
+from course.models import (
+    Language,
+    Lecturer,
+    Course
+)
 from django.forms.models import model_to_dict
 from rest_framework.renderers import JSONRenderer
 
