@@ -2,6 +2,7 @@ from rest_framework import serializers
 from django.contrib.auth.models import User
 
 from .models import *
+from .repositories import *
 
 
 class HomeworkTaskRequestSerializer(serializers.ModelSerializer):
@@ -14,7 +15,7 @@ class HomeworkTaskRequestSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         validated_data["teacher"] = User.objects.get(pk=validated_data["teacher"])
-        return HomeworkTaskModel.objects.create(**validated_data)
+        return HomeworkTaskRepository.create(**validated_data)
 
     def update(self, instance, validated_data):
         validated_data["teacher"] = User.objects.get(pk=validated_data["teacher"])
@@ -55,8 +56,8 @@ class HomeworkAnswerRequestSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         validated_data["student"] = User.objects.get(pk=validated_data["student"])
-        validated_data["task"] = HomeworkTaskModel.objects.get(pk=validated_data["task"])
-        return HomeworkAnswerModel.objects.create(**validated_data)
+        validated_data["task"] = HomeworkTaskRepository.get_by_id(id=validated_data["task"])
+        return HomeworkAnswerRepository.create(**validated_data)
     
     def update(self, instance, validated_data):
         validated_data["student"] = User.objects.get(pk=validated_data["student"])
@@ -94,8 +95,8 @@ class HomeworkGradeRequestSerializer(serializers.ModelSerializer):
     grade = serializers.FloatField(max_value=100.0, min_value=0.0)
 
     def create(self, validated_data):
-        validated_data["homework"] = HomeworkAnswerModel.objects.get(pk=validated_data["homework"])
-        return GradesForHomework.objects.create(**validated_data)
+        validated_data["homework"] = HomeworkAnswerRepository.get_by_id(id=validated_data["homework"])
+        return HomeworkGradeRepository.create(**validated_data)
 
     def update(self, instance, validated_data):
         validated_data["homework"] = HomeworkAnswerModel.objects.get(pk=validated_data["homework"])
