@@ -37,7 +37,7 @@ class LessonQuiz(models.Model):
 
 
 class FinalQuizQuestion(models.Model):
-    related_quiz = models.OneToOneField(FinalQuiz, on_delete=models.CASCADE,
+    related_quiz = models.ForeignKey(FinalQuiz, on_delete=models.CASCADE,
                                         verbose_name='Quiz id')  # quiz, к которому применяется
     text = models.CharField(max_length=100, verbose_name='Question text')  # текст вопроса
     mark = models.FloatField(verbose_name='Mark for question')  # кол-во баллов за правильный ответ на вопрос

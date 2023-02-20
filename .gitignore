@@ -66,6 +66,18 @@ local_settings.py
 db.sqlite3
 db.sqlite3-journal
 
+# Django db migrations
+quiz/migrations/*.py
+course/migrations/*.py
+homework/migrations/*.py
+lesson/migrations/*.py
+
+#except
+!quiz/migrations/__init__.py
+!course/migrations/__init__.py
+!homework/migrations/__init__.py
+!lesson/migrations/__init__.py
+
 # Flask stuff:
 instance/
 .webassets-cache
