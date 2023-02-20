@@ -14,8 +14,10 @@ python-environ = "^0.4.54"
 environ = "^1.0"
 djangorestframework = "^3.14.0"
 djangorestframework-simplejwt = "^5.2.2"
-pytest-django = "^4.5.2"
+
 pytest = "^7.2.1"
+pytest-django = "^4.5.2"
+django-configurations = "^2.4"
 
 [build-system]
 requires = ["poetry-core"]

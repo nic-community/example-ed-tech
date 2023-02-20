@@ -5,6 +5,7 @@ from .models import *
 
 
 class HomeworkTaskRequestSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(required=False)
     teacher = serializers.CharField()
     course = serializers.CharField(max_length=150)
     lesson = serializers.CharField(max_length=150)
@@ -46,6 +47,7 @@ class HomeworkTaskResponseSerializer(serializers.ModelSerializer):
 
 
 class HomeworkAnswerRequestSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(required=False)
     student = serializers.CharField()
     task = serializers.CharField()
     content = serializers.CharField(allow_blank=True, required=False)
@@ -86,6 +88,7 @@ class HomeworkAnswerResponseSerializer(serializers.ModelSerializer):
 
 
 class HomeworkGradeRequestSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(required=False)
     homework = serializers.CharField()
     comments = serializers.CharField(allow_blank=True, required=False)
     grade = serializers.FloatField(max_value=100.0, min_value=0.0)
