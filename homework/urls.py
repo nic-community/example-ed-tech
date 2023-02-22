@@ -9,9 +9,9 @@ from .views.grade_views import *
 
 
 router = routers.SimpleRouter()
-router.register(r'tasks', TaskViewSet, basename="tasksviewset")
-router.register(r'answers', AnswerViewSet, basename="answersviewset")
-router.register(r'grades', GradeViewSet, basename="gradesviewset")
+router.register(r'/tasks', TaskViewSet, basename="tasksviewset")
+router.register(r'/answers', AnswerViewSet, basename="answersviewset")
+router.register(r'/grades', GradeViewSet, basename="gradesviewset")
 
 
 urlpatterns = [
