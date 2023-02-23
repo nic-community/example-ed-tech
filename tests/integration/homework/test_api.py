@@ -53,8 +53,14 @@ class TestHomeworkTaskApi():
         
         url = '/api/v1/homework/tasks/'+str(task.id)+'/'
         response = client.get(url)
+        response_data = response.json()
 
         assert response.status_code == status.HTTP_200_OK 
+        assert response_data["teacher"] == task.teacher.id
+        assert response_data['course'] == task.course
+        assert response_data['lesson'] == task.lesson
+        assert response_data['title'] == task.title
+        assert response_data['content'] == task.content
 
     @pytest.mark.django_db
     def test_get_detail_task_from_wrong_url(self, client):
@@ -109,8 +115,14 @@ class TestHomeworkTaskApi():
         url = '/api/v1/homework/tasks/'+str(task.id)+'/'
         data = {'teacher':user.id, 'course': 'python', 'lesson': '1 lesson', 'title': 'django tests', 'content': 'django tests'}
         response = client.put(url, json.dumps(data), content_type='application/json')
-     
+        response_data = response.json()
+
         assert response.status_code == status.HTTP_201_CREATED
+        assert response_data['teacher_id'] == data['teacher']
+        assert response_data['course'] == data['course']
+        assert response_data['lesson'] == data['lesson']
+        assert response_data['title'] == data['title']
+        assert response_data['content'] == data['content']
 
     @pytest.mark.django_db
     def test_update_non_existent_task(self, client):   
@@ -204,8 +216,12 @@ class TestHomeworkAnswerApi():
 
         url = '/api/v1/homework/answers/'+str(answer.id)+'/'
         response = client.get(url)
+        response_data = response.json()
 
         assert response.status_code == status.HTTP_200_OK 
+        assert response_data['student'] == answer.student.id
+        assert response_data['task'] == answer.task.id
+        assert response_data['content'] == answer.content
 
     @pytest.mark.django_db
     def test_get_detali_answer_from_wrong_url(self, client):
@@ -349,8 +365,12 @@ class TestHomeworkGradeApi():
 
         url = '/api/v1/homework/grades/'+str(grade.id)+'/'
         response = client.get(url)
+        response_data = response.json()
 
         assert response.status_code == status.HTTP_200_OK 
+        assert response_data['homework'] == grade.homework.id
+        assert response_data['comments'] == grade.comments
+        assert response_data['grade'] == grade.grade
 
     @pytest.mark.django_db
     def test_get_detail_grade_from_wrong_url(self, client):

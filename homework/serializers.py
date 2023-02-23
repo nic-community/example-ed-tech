@@ -19,6 +19,7 @@ class HomeworkTaskRequestSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         validated_data["teacher"] = User.objects.get(pk=validated_data["teacher"])
         instance.teacher = validated_data.get('teacher', instance.teacher)
+        instance.course = validated_data.get('course', instance.course)
         instance.lesson = validated_data.get('lesson', instance.lesson)
         instance.title = validated_data.get('title', instance.title)
         instance.content = validated_data.get('content', instance.content)
