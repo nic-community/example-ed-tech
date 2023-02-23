@@ -30,16 +30,19 @@ class TestHomeworkTaskApi():
 
         url = '/api/v1/homework/tasks/'
         response = client.get(url)
+        response_data = response.json()
 
         assert response.status_code == status.HTTP_200_OK
-        assert response.json()[0]["teacher"] == task.teacher.id
-        assert response.json()[0]['course'] == task.course
-        assert response.json()[0]['lesson'] == task.lesson
-        assert response.json()[0]['title'] == task.title
-        assert response.json()[0]['content'] == task.content
+        assert response_data[0]["teacher"] == task.teacher.id
+        assert response_data[0]['course'] == task.course
+        assert response_data[0]['lesson'] == task.lesson
+        assert response_data[0]['title'] == task.title
+        assert response_data[0]['content'] == task.content
 
-        # bad scenarios
+    @pytest.mark.django_db
+    def test_get_list_of_tasks_form_wrong_url(self, client):
         url = '/api/v1/homework/tasks-bad-url/'
+    
         response = client.get(url)
         assert response.status_code == status.HTTP_404_NOT_FOUND
 
@@ -53,11 +56,21 @@ class TestHomeworkTaskApi():
 
         assert response.status_code == status.HTTP_200_OK 
 
-        # bad scenarios
+    @pytest.mark.django_db
+    def test_get_detail_task_from_wrong_url(self, client):
         url = '/api/v1/homework/tasks/'+'bad-url/'
         with pytest.raises(ValueError) as e:
             response = client.get(url)
         assert str(e.value) == "Field 'id' expected a number but got 'bad-url'."
+
+    @pytest.mark.django_db
+    def test_get_detail_non_existent_task(self, client):        
+        url = '/api/v1/homework/tasks/1/'
+        response = client.get(url)
+        response_data = response.json()
+
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+        assert response_data['detail'] == 'Not found.'
 
     @pytest.mark.django_db
     def test_create_task(self, init_objects, client):
@@ -66,23 +79,28 @@ class TestHomeworkTaskApi():
         url = '/api/v1/homework/tasks/'
         data = {'teacher':user.id, 'course': 'python', 'lesson': '1 lesson', 'title': 'django tests', 'content': 'django tests'}
         response = client.post(url, data)
+        response_data = response.json()
 
         assert response.status_code == status.HTTP_201_CREATED
-        assert response.json()["teacher_id"] == data['teacher']
-        assert response.json()['course'] == data['course']
-        assert response.json()['lesson'] == data['lesson']
-        assert response.json()['title'] == data['title']
-        assert response.json()['content'] == data['content']
+        assert response_data["teacher_id"] == data['teacher']
+        assert response_data['course'] == data['course']
+        assert response_data['lesson'] == data['lesson']
+        assert response_data['title'] == data['title']
+        assert response_data['content'] == data['content']
 
-        # bad scenarios
+    @pytest.mark.django_db
+    def test_create_task_with_empty_data(self, client):
+        url = '/api/v1/homework/tasks/'
         data = {}
         response = client.post(url, data)
+        response_data = response.json()
+
         assert response.status_code == status.HTTP_400_BAD_REQUEST
-        assert response.json()["teacher"] == ['This field is required.']
-        assert response.json()['course'] == ['This field is required.']
-        assert response.json()['lesson'] == ['This field is required.']
-        assert response.json()['title'] == ['This field is required.']
-        assert response.json()['content'] == ['This field is required.']
+        assert response_data["teacher"] == ['This field is required.']
+        assert response_data['course'] == ['This field is required.']
+        assert response_data['lesson'] == ['This field is required.']
+        assert response_data['title'] == ['This field is required.']
+        assert response_data['content'] == ['This field is required.']
 
     @pytest.mark.django_db
     def test_update_task(self, init_objects, client):
@@ -94,22 +112,41 @@ class TestHomeworkTaskApi():
      
         assert response.status_code == status.HTTP_201_CREATED
 
-        # bad scenarios    
-        url = '/api/v1/homework/tasks/'+str(task.id+1)+'/'
+    @pytest.mark.django_db
+    def test_update_non_existent_task(self, client):   
+        url = '/api/v1/homework/tasks/1/'
         data = {}
         response = client.put(url, json.dumps(data), content_type='application/json')
-        assert response.status_code == status.HTTP_404_NOT_FOUND
+        response_data = response.json()
 
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+        assert response_data['detail'] == 'Not found.'
+
+    @pytest.mark.django_db
+    def test_put_method_to_another_url(self, client):
         url = '/api/v1/homework/tasks/'
         data = {}
         response = client.put(url, json.dumps(data), content_type='application/json')
+        response_data = response.json()
+
         assert response.status_code == status.HTTP_405_METHOD_NOT_ALLOWED
+        assert response_data['detail']== 'Method "PUT" not allowed.'
+
+    @pytest.mark.django_db
+    def test_update_task_with_empty_data(self, init_objects,client):
+        task = init_objects[1]
 
         url = '/api/v1/homework/tasks/'+str(task.id)+'/'
         data = {}
         response = client.put(url, json.dumps(data), content_type='application/json')
-     
+        response_data = response.json()
+
         assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response_data['teacher'] == ['This field is required.']
+        assert response_data['course'] == ['This field is required.']
+        assert response_data['lesson'] == ['This field is required.']
+        assert response_data['title'] == ['This field is required.']
+        assert response_data['content'] == ['This field is required.']
 
 
     @pytest.mark.django_db
@@ -120,14 +157,23 @@ class TestHomeworkTaskApi():
         response = client.delete(url)
         assert response.status_code == status.HTTP_204_NO_CONTENT
 
-        # bad scenarios
-        url = '/api/v1/homework/tasks/'+str(task.id)+'/'
+    @pytest.mark.django_db
+    def test_delete_non_existent_task(self, client):
+        url = '/api/v1/homework/tasks/1/'
         response = client.delete(url)
-        assert response.status_code == status.HTTP_404_NOT_FOUND
+        response_data = response.json()
 
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+        assert response_data['detail'] == 'Not found.'
+
+    @pytest.mark.django_db
+    def test_delete_method_to_another_url(self, client):
         url = '/api/v1/homework/tasks/'
         response = client.delete(url)
+        response_data = response.json()
+
         assert response.status_code == status.HTTP_405_METHOD_NOT_ALLOWED
+        assert response_data['detail']== 'Method "DELETE" not allowed.'
 
 
 class TestHomeworkAnswerApi():
@@ -138,14 +184,17 @@ class TestHomeworkAnswerApi():
 
         url = '/api/v1/homework/answers/'
         response = client.get(url)
+        response_data = response.json()
 
         assert response.status_code == status.HTTP_200_OK
-        assert response.json()[0]["student"] == answer.student.id
-        assert response.json()[0]['task'] == answer.task.id
-        assert response.json()[0]['content'] == answer.content
+        assert response_data[0]["student"] == answer.student.id
+        assert response_data[0]['task'] == answer.task.id
+        assert response_data[0]['content'] == answer.content
 
-        # bad scenarios
+    @pytest.mark.django_db
+    def test_get_list_of_answers_form_wrong_url(self, client):
         url = '/api/v1/homework/answers-bad-url/'
+
         response = client.get(url)
         assert response.status_code == status.HTTP_404_NOT_FOUND
 
@@ -158,12 +207,21 @@ class TestHomeworkAnswerApi():
 
         assert response.status_code == status.HTTP_200_OK 
 
-        # bad scenarios
+    @pytest.mark.django_db
+    def test_get_detali_answer_from_wrong_url(self, client):
         url = '/api/v1/homework/answers/'+'bad-url/'
         with pytest.raises(ValueError) as e:
             response = client.get(url)
         assert str(e.value) == "Field 'id' expected a number but got 'bad-url'."
 
+    @pytest.mark.django_db
+    def test_get_detail_non_existent_answer(self, client):
+        url = '/api/v1/homework/answers/1/'
+        response = client.get(url)
+        response_data = response.json()
+
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+        assert response_data['detail'] == 'Not found.'
 
     @pytest.mark.django_db
     def test_create_answer(self, init_objects, client):
@@ -172,19 +230,24 @@ class TestHomeworkAnswerApi():
         url = '/api/v1/homework/answers/'
         data = {'student':user.id, 'task': task.id, 'content': 'task content 2'}
         response = client.post(url, data)
+        response_data = response.json()
 
         assert response.status_code == status.HTTP_201_CREATED
-        assert response.json()["student_id"] == data['student']
-        assert response.json()['task_id'] == data['task']
-        assert response.json()['content'] == data['content']
+        assert response_data["student_id"] == data['student']
+        assert response_data['task_id'] == data['task']
+        assert response_data['content'] == data['content']
 
-        # bad scenarios
+    @pytest.mark.django_db
+    def test_create_answer_with_empty_data(self, client):
         data = {}
+
+        url = '/api/v1/homework/answers/'
         response = client.post(url, data)
-        print(response.json())
+        response_data = response.json()
+
         assert response.status_code == status.HTTP_400_BAD_REQUEST
-        assert response.json()["student"] == ['This field is required.']
-        assert response.json()['task'] == ['This field is required.']
+        assert response_data["student"] == ['This field is required.']
+        assert response_data['task'] == ['This field is required.']
   
     @pytest.mark.django_db
     def test_update_answer(self, init_objects, client):
@@ -193,26 +256,42 @@ class TestHomeworkAnswerApi():
         url = '/api/v1/homework/answers/'+str(answer.id)+"/"
         data = {'student':user.id, 'task': task.id, 'content': 'task content 3'}
         response = client.put(url, json.dumps(data), content_type='application/json')
-        
-        assert response.status_code == status.HTTP_201_CREATED
-        assert response.json()["content"] == data["content"]
+        response_data = response.json()
 
-        # bad scenarios    
-        url = '/api/v1/homework/answers/'+str(answer.id+1)+'/'
+        assert response.status_code == status.HTTP_201_CREATED
+        assert response_data["content"] == data["content"]
+
+    @pytest.mark.django_db
+    def test_update_non_existent_answer(self, client):
+        url = '/api/v1/homework/answers/1/'
         data = {}
         response = client.put(url, json.dumps(data), content_type='application/json')
-        assert response.status_code == status.HTTP_404_NOT_FOUND
+        response_data = response.json()
 
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+        assert response_data['detail'] == 'Not found.'
+
+    @pytest.mark.django_db
+    def test_put_method_to_another_url(self, client):
         url = '/api/v1/homework/answers/'
         data = {}
         response = client.put(url, json.dumps(data), content_type='application/json')
+        response_data = response.json()
+
         assert response.status_code == status.HTTP_405_METHOD_NOT_ALLOWED
+        assert response_data['detail']== 'Method "PUT" not allowed.'
+
+    @pytest.mark.django_db
+    def test_update_answer_with_empty_data(self, init_objects, client):
+        answer = init_objects[2]
 
         url = '/api/v1/homework/answers/'+str(answer.id)+'/'
         data = {}
         response = client.put(url, json.dumps(data), content_type='application/json')
-     
-        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        response_data = response.json()
+        
+        assert response_data["student"] == ['This field is required.']
+        assert response_data['task'] == ['This field is required.']
 
 
     @pytest.mark.django_db
@@ -223,15 +302,23 @@ class TestHomeworkAnswerApi():
         response = client.delete(url)
         assert response.status_code == status.HTTP_204_NO_CONTENT
 
-        # bad scenarios
-        url = '/api/v1/homework/answers/'+str(answer.id)+'/'
+    @pytest.mark.django_db
+    def test_delete_non_existent_answer(self, client):
+        url = '/api/v1/homework/answers/1/'
         response = client.delete(url)
-        assert response.status_code == status.HTTP_404_NOT_FOUND
+        response_data = response.json()
 
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+        assert response_data['detail'] == 'Not found.'
+
+    @pytest.mark.django_db
+    def test_delete_method_to_another_url(self, client):
         url = '/api/v1/homework/answers/'
         response = client.delete(url)
-        assert response.status_code == status.HTTP_405_METHOD_NOT_ALLOWED
+        response_data =response.json()
 
+        assert response.status_code == status.HTTP_405_METHOD_NOT_ALLOWED
+        assert response_data['detail']== 'Method "DELETE" not allowed.'
 
 
 class TestHomeworkGradeApi():
@@ -242,15 +329,18 @@ class TestHomeworkGradeApi():
 
         url = '/api/v1/homework/grades/'
         response = client.get(url)
+        response_data = response.json()
 
         assert response.status_code == status.HTTP_200_OK
-        assert response.json()[0]['homework'] == grade.homework.id
-        assert response.json()[0]['comments'] == grade.comments
-        assert response.json()[0]['grade'] == grade.grade
+        assert response_data[0]['homework'] == grade.homework.id
+        assert response_data[0]['comments'] == grade.comments
+        assert response_data[0]['grade'] == grade.grade
 
-        # bad scenarios
+    @pytest.mark.django_db
+    def test_get_list_of_grades_from_wrong_url(self, client):
         url = '/api/v1/homework/grades-bad-url/'
         response = client.get(url)
+
         assert response.status_code == status.HTTP_404_NOT_FOUND
 
     @pytest.mark.django_db
@@ -262,11 +352,21 @@ class TestHomeworkGradeApi():
 
         assert response.status_code == status.HTTP_200_OK 
 
-        # bad scenarios
+    @pytest.mark.django_db
+    def test_get_detail_grade_from_wrong_url(self, client):
         url = '/api/v1/homework/grades/'+'bad-url/'
         with pytest.raises(ValueError) as e:
             response = client.get(url)
         assert str(e.value) == "Field 'id' expected a number but got 'bad-url'."
+
+    @pytest.mark.django_db
+    def test_get_detail_non_existent_grade(self, client):
+        url = '/api/v1/homework/grades/1/'
+        response = client.get(url)
+        response_data = response.json()
+
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+        assert response_data['detail'] == 'Not found.'
 
 
     @pytest.mark.django_db
@@ -276,18 +376,23 @@ class TestHomeworkGradeApi():
         url = '/api/v1/homework/grades/'
         data = {'homework':answer.id, 'comments': 'test comment 2', 'grade': 90.5}
         response = client.post(url, data)
+        response_data = response.json()
 
         assert response.status_code == status.HTTP_201_CREATED
-        assert response.json()['homework_id'] == data['homework']
-        assert response.json()['comments'] == data['comments']
-        assert response.json()['grade'] == data['grade']
+        assert response_data['homework_id'] == data['homework']
+        assert response_data['comments'] == data['comments']
+        assert response_data['grade'] == data['grade']
 
-        # bad scenarios
+    @pytest.mark.django_db
+    def test_create_grade_for_answer_with_empty_data(self, client):
+        url = '/api/v1/homework/grades/'
         data = {}
         response = client.post(url, data)
+        response_data = response.json()
+
         assert response.status_code == status.HTTP_400_BAD_REQUEST
-        assert response.json()["homework"] == ['This field is required.']
-        assert response.json()['grade'] == ['This field is required.']
+        assert response_data["homework"] == ['This field is required.']
+        assert response_data['grade'] == ['This field is required.']
     
     @pytest.mark.django_db
     def test_update_grade_for_answer(self, init_objects, client):
@@ -301,22 +406,38 @@ class TestHomeworkGradeApi():
         assert response.json()['comments'] == data['comments']
         assert response.json()['grade'] == data['grade']
 
-        # bad scenarios    
-        url = '/api/v1/homework/grades/'+str(grade.id+1)+'/'
+    @pytest.mark.django_db
+    def test_update_non_existent_grade_for_answer(self, client):
+        url = '/api/v1/homework/grades/1/'
         data = {}
         response = client.put(url, json.dumps(data), content_type='application/json')
-        assert response.status_code == status.HTTP_404_NOT_FOUND
+        response_data = response.json()
 
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+        assert response_data['detail'] == 'Not found.'
+
+    @pytest.mark.django_db
+    def test_put_method_to_another_url(self, client):
         url = '/api/v1/homework/grades/'
         data = {}
         response = client.put(url, json.dumps(data), content_type='application/json')
+        response_data = response.json()
+
         assert response.status_code == status.HTTP_405_METHOD_NOT_ALLOWED
+        assert response_data['detail']== 'Method "PUT" not allowed.'
+    
+    @pytest.mark.django_db
+    def test_update_grade_for_answer_with_empty_data(self, init_objects, client):
+        grade = init_objects[3]
 
         url = '/api/v1/homework/grades/'+str(grade.id)+'/'
         data = {}
         response = client.put(url, json.dumps(data), content_type='application/json')
-     
+        response_data = response.json()
+
         assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response_data["homework"] == ['This field is required.']
+        assert response_data['grade'] == ['This field is required.']
 
     @pytest.mark.django_db
     def test_delete_grade_for_answer(self, init_objects, client):
@@ -326,12 +447,21 @@ class TestHomeworkGradeApi():
         response = client.delete(url)
         assert response.status_code == status.HTTP_204_NO_CONTENT
 
-        # bad scenarios
-        url = '/api/v1/homework/grades/'+str(grade.id)+'/'
+    @pytest.mark.django_db
+    def test_delete_non_existent_grade_for_answer(self, client):
+        url = '/api/v1/homework/grades/1/'
         response = client.delete(url)
-        assert response.status_code == status.HTTP_404_NOT_FOUND
+        response_data = response.json()
 
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+        assert response_data['detail'] == 'Not found.'
+
+    @pytest.mark.django_db
+    def test_delete_method_to_another_url(self, client):
         url = '/api/v1/homework/grades/'
         response = client.delete(url)
+        response_data = response.json()
+
         assert response.status_code == status.HTTP_405_METHOD_NOT_ALLOWED
+        assert response_data['detail']== 'Method "DELETE" not allowed.'
 
