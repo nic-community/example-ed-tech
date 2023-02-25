@@ -1,6 +1,10 @@
 from unittest import TestCase
 import pytest
-from course.models import *
+from course.models import (
+    Language,
+    Lecturer,
+    Course
+)
 from user.models import User
 
 

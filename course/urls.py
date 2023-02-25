@@ -1,7 +1,10 @@
 from django.urls import path
 from rest_framework import routers
-from .views import *
-from course.views.language_view import *
+from .views import (
+    course_view,
+    language_view,
+    lecturer_view
+)
 from .views.lecturer_view import LecturerViewSet
 from .views.language_view import LanguageViewSet
 from .views.course_view import CourseViewSet
